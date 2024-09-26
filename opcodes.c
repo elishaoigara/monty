@@ -1,24 +1,27 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "monty.h"
 
 /**
- * push - Push an element to the stack.
+ * push - Pushes an element onto the stack.
  * @stack: Double pointer to the stack.
- * @line_number: Line number of the bytecode file.
- * @value: The value to push to the stack.
+ * @line_number: Line number in the file.
  */
-void push(stack_t **stack, unsigned int line_number, char *value)
+void push(stack_t **stack, unsigned int line_number)
 {
-    stack_t *new_node;
+    char *value = strtok(NULL, " \t\n");
     int num;
+    stack_t *new_node;
 
-    if (!value || (num = atoi(value)) == 0 && value[0] != '0')
+    if (!value || ((num = atoi(value)) == 0 && value[0] != '0'))
     {
-        fprintf(stderr, "L%u: usage: push integer\n", line_number);
+        fprintf(stderr, "L%d: usage: push integer\n", line_number);
         exit(EXIT_FAILURE);
     }
 
+    /* Create a new node */
     new_node = malloc(sizeof(stack_t));
-    if (!new_node)
+    if (new_node == NULL)
     {
         fprintf(stderr, "Error: malloc failed\n");
         exit(EXIT_FAILURE);
@@ -27,26 +30,27 @@ void push(stack_t **stack, unsigned int line_number, char *value)
     new_node->n = num;
     new_node->next = *stack;
     new_node->prev = NULL;
-    if (*stack)
+
+    if (*stack != NULL)
         (*stack)->prev = new_node;
+    
     *stack = new_node;
 }
 
 /**
- * pall - Prints all values on the stack from top to bottom.
+ * pall - Prints all values on the stack, starting from the top.
  * @stack: Double pointer to the stack.
- * @line_number: Line number of the bytecode file.
+ * @line_number: Line number (unused).
  */
 void pall(stack_t **stack, unsigned int line_number)
 {
-    stack_t *temp = *stack;
+    stack_t *current = *stack;
+    (void)line_number;
 
-    (void)line_number;  /* Unused parameter */
-
-    while (temp)
+    while (current != NULL)
     {
-        printf("%d\n", temp->n);
-        temp = temp->next;
+        printf("%d\n", current->n);
+        current = current->next;
     }
 }
 
